@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+## Author:	Owen Cocjin
+## Version:	1.0
+## Date:	10/01/20
+## Notes:
 
 from progMenu import menu, vprint, printFAA
 from CryptoPack import *

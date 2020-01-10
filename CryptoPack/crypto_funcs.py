@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	0.1
-## Date:	09/01/20
+## Version:	1.0
+## Date:	10/01/20
 ## Notes:
 
 def ea(a, b, log=-1):
