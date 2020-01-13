@@ -3,7 +3,7 @@
 ## Date:	10/01/20
 ## Notes:
 
-from CryptoPack.crypto_funcs import feea
+from cryptoPack.crypto_funcs import feea
 
 class Crypt():
 	def __init__(self, name, word, key, letters=None):
@@ -73,7 +73,7 @@ class ShiftCipher(Crypt):
 		return self.converted
 
 class AffineCipher(Crypt):
-	def __init__(self, word='', key=None, d=None):
+	def __init__(self, word='', key=None, d=False):
 		Crypt.__init__(self, "Affine Cipher", self.patdown(word), key)
 		self.encry() if not d else self.decry()
 		self.cryMode="E" if not d else "D"
@@ -93,9 +93,10 @@ class AffineCipher(Crypt):
 		'''f(M)=inverse(a)(C-b)mod26'''
 		inverse=feea(26, self.key[0])[1]
 		self.converted=''.join([self.letters[inverse*((ord(c)-97)-self.key[1])%26] for c in self.word])
+		return self.converted
 
 class VigenereCipher(Crypt):
-	def __init__(self, word='', key=None, d=None):
+	def __init__(self, word='', key=None, d=False):
 		Crypt.__init__(self, "Vigenere Cipher", self.patdown(word), key)
 		self.cryMode="E" if not d else "D"
 		self.encry() if not d else self.decry()
@@ -144,3 +145,107 @@ class TranspoCipher(Crypt):
 			self.converted+=f"{''.join([self.word[i*len(self.key)+c-1] for c in self.key])} "
 
 		return self.converted
+
+#------------#
+#    MISC    #
+#------------#
+
+class Term():
+	'''Define a term for a polynomial'''
+	def __init__(self, t):
+		t=str(t)  #Make t a string
+		#Try to figure out passed string "t"
+		try:
+			self.x=t.find('x')  #Find x, if it exists
+			self.c=t.find('^')  #Find ^, if it exists
+
+			#Set coefficient and degree depending on if x and ^ were found
+			self.coeff=int(t[:self.x]) if self.x>0 else 1
+			self.degree=int(t[self.c+1:]) if self.c>-1 else 1
+
+			#Assume entire t is coefficient if x and ^ weren't found
+			if self.x==self.c==-1:
+				self.coeff=int(t)
+				self.degree=0
+
+			#Errors for certain conditions
+			elif self.x!=len(t)-1 and self.c==-1 or self.c>0 and self.x==-1 or self.degree<0:
+				raise ValueError(f"Invalid term passed!")
+
+		except:
+			raise ValueError(f"Invalid term passed!")
+
+	def __str__(self):
+		'''Returns (BLANK) if either coeff or degree are None (this is probably due to an incorrect term being set)'''
+		if 0==self.coeff==self.degree:
+			return "(BLANK)"
+		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
+		return f"({self.coeff}{t})"
+
+	def __add__(self, other):
+		'''Adds if degree the same. Returns a Term object'''
+		if self.degree==other.getDegree():
+			return Term(f"{self.coeff+other.getCoeff()}x^{self.degree}")
+		else:
+			return False
+
+	def __sub__(self, other):
+		'''Subtracts if degree the same. Returns a Term object'''
+		if self.degree==other.getDegree():
+			return Term(f"{self.coeff-other.getCoeff()}x^{self.degree}")
+
+	def __mul__(self, other):
+		'''Multiply terms'''
+		return Term(f"{self.coeff*other.getCoeff()}x^{self.degree+other.getDegree()}")
+
+	def stats(self):
+		'''Prints __dict__, but a little prettuer than just calling __dict__'''
+		return self.__dict__
+
+	def setCoeff(self, new):
+		self.coeff=new
+	def getCoeff(self):
+		return self.coeff
+
+	def setDegree(self, new):
+		'''Degree can't be negative'''
+		self.degree=int(new) if new>=0 else None
+	def getDegree(self):
+		return self.degree
+
+	def getPackage(self):
+		'''Returns self as a string (can be used as input for another Term)'''
+		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
+		return f"{self.coeff}{t}"
+
+class Polynomial():
+	def __init__(self, *term):
+		self.t=term
+
+	def __str__(self):
+		return '('+' + '.join([f"({i.getPackage()})" for i in self.t]).strip(' + ')+')'
+
+	def __add__(self, other):
+		if type(other)!=Polynomial:
+			raise ValueError(f"Can't add a polynomial to another type ({type(other)})")
+		all=self+other
+		return all
+
+
+if __name__=="__main__":
+	x=Term("6x^3")
+	y=Term("2x^3")
+	z=Term("8.5x")
+	o=Term("-1x^-1")
+	p=Polynomial(x, y, z)
+	print(f"p: {p}")
+	print(f"z stat: {z.stats()}")
+	print(f"z: {z}")
+	z.setDegree(3)
+	z.setCoeff(1)
+	print(f"z: {z}")
+	print(f"z stat: {z.stats()}")
+
+	p=Polynomial(x, y, z)
+	print(f"p: {p}")
+	print(f"added: {p+5}")

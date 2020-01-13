@@ -25,6 +25,10 @@ def et(r, flsh=False):
 			toRet.append(i)
 	return len(toRet), toRet
 
+def et(r):
+	'''Euler's totient. Returns the number of coprime ints to n and a list of them'''
+	pass
+
 def feea(a, b, *, prnt=False, s=False):
 	'''Fast Extended Euclidean Algorithm. Returns the gcd and inverse(b mod a). When s==True, assumes the greater number is mod, otherwise "a" is mod'''
 	if s:  #Swaps if s==True. Mainly used if user input is not guaranteed correct
@@ -58,6 +62,8 @@ def keyz26(key):
 	'''Turns a string into a list of ints'''
 	return [(ord(c)-97) for c in key]
 
+def listPrimes(n):
+	pass
 
 #-------------#
 #    NOTES    #

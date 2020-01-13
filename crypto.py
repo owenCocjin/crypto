@@ -5,18 +5,24 @@
 ## Notes:
 
 from progMenu import menu, vprint, printFAA
-from CryptoPack import *
-from CryptoPack.crypto_entries import *
+from cryptoPack import *
+from cryptoPack.crypto_entries import *
 PARSER=menu.parse(True)
-vprint.setVerbse=(menu.findFlag(['v', "verbose"]))
+vprint.setVerbose(menu.findFlag(['v', "verbose"]))
 
 def main():
+	vprint(PARSER)
 	if not PARSER["mode"] or not PARSER["word"] or not PARSER["key"]:
 		hFunc()
 
 	if PARSER["mode"] in ['0', "shift"]:
-		shifted=ShiftCipher(PARSER["word"], PARSER["key"])
-		print(shifted)
+		print(ShiftCipher(PARSER["word"], PARSER["key"]))
+
+	elif PARSER["mode"] in ['1', "affine"]:
+		print(AffineCipher(PARSER["word"], PARSER["key"], PARSER["decrypt"]))
+
+	else:
+		hFunc()
 
 if __name__=="__main__":
 	main()

@@ -3,5 +3,5 @@
 ## Date:	10/01/20
 ## Notes:
 
-from CryptoPack.crypto_classes import *
-from CryptoPack.crypto_funcs import *
+from cryptoPack.crypto_classes import *
+from cryptoPack.crypto_funcs import *
