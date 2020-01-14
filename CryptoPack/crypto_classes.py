@@ -169,16 +169,22 @@ class Term():
 				self.degree=0
 
 			#Errors for certain conditions
-			elif self.x!=len(t)-1 and self.c==-1 or self.c>0 and self.x==-1 or self.degree<0:
-				raise ValueError(f"Invalid term passed!")
-
-		except:
-			raise ValueError(f"Invalid term passed!")
+			elif self.degree<0:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (degree must be >=0. Setting to 0)!")
+				self.degree=0
+			elif self.x!=len(t)-1 and self.c==-1:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (invalid degree declaration. Setting to 0)!")
+				self.degree=0
+			elif self.c>0 and self.x==-1:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (invalid coefficient declatration. Setting to 1)!")
+				self.coeff=1
+		except ValueError as e:
+			print(f"[|X: Term]: {e}")
+			return
+			#exit(1)
 
 	def __str__(self):
 		'''Returns (BLANK) if either coeff or degree are None (this is probably due to an incorrect term being set)'''
-		if 0==self.coeff==self.degree:
-			return "(BLANK)"
 		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
 		return f"({self.coeff}{t})"
 
@@ -196,10 +202,14 @@ class Term():
 
 	def __mul__(self, other):
 		'''Multiply terms'''
+		other=Term(str(other)) if type(other)==int else other
 		return Term(f"{self.coeff*other.getCoeff()}x^{self.degree+other.getDegree()}")
 
+	def __eq__(self, other):
+		return (self.coeff, self.degree)==(other.getCoeff(), other.getDegree())
+
 	def stats(self):
-		'''Prints __dict__, but a little prettuer than just calling __dict__'''
+		'''Prints __dict__, but a little prettier than just calling __dict__'''
 		return self.__dict__
 
 	def setCoeff(self, new):
@@ -218,34 +228,15 @@ class Term():
 		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
 		return f"{self.coeff}{t}"
 
-class Polynomial():
-	def __init__(self, *term):
-		self.t=term
-
-	def __str__(self):
-		return '('+' + '.join([f"({i.getPackage()})" for i in self.t]).strip(' + ')+')'
-
-	def __add__(self, other):
-		if type(other)!=Polynomial:
-			raise ValueError(f"Can't add a polynomial to another type ({type(other)})")
-		all=self+other
-		return all
-
 
 if __name__=="__main__":
-	x=Term("6x^3")
-	y=Term("2x^3")
-	z=Term("8.5x")
-	o=Term("-1x^-1")
-	p=Polynomial(x, y, z)
-	print(f"p: {p}")
-	print(f"z stat: {z.stats()}")
-	print(f"z: {z}")
-	z.setDegree(3)
-	z.setCoeff(1)
-	print(f"z: {z}")
-	print(f"z stat: {z.stats()}")
-
-	p=Polynomial(x, y, z)
-	print(f"p: {p}")
-	print(f"added: {p+5}")
+	p=5
+	p1=Polynomial(*[Term(i) for i in ["x", "-1"]])
+	p1=p1**p
+	print(f"p1: {p1}")
+	p2=Polynomial(*[Term(i) for i in [f"x^{p}", "-1"]])
+	print(f"p2: {p2}")
+	rec=p1-p2
+	for i in rec:
+		print(f"{i.getCoeff()}%{p}->{i.getCoeff()%p}")
+	print(rec)
