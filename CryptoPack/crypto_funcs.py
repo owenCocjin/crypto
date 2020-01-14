@@ -17,6 +17,7 @@ def ea(a, b, log=-1):
 	return ea(b, r, log) if r!=0 else (b, log)
 
 def et(r, flsh=False):
+	'''UNDER CONSTRUCTION!'''
 	'''Euler's totient. Returns the number of coprime ints to n and a list of them'''
 	toRet=[]
 	for i in range(r):
@@ -25,9 +26,6 @@ def et(r, flsh=False):
 			toRet.append(i)
 	return len(toRet), toRet
 
-def et(r):
-	'''Euler's totient. Returns the number of coprime ints to n and a list of them'''
-	pass
 
 def feea(a, b, *, prnt=False, s=False):
 	'''Fast Extended Euclidean Algorithm. Returns the gcd and inverse(b mod a). When s==True, assumes the greater number is mod, otherwise "a" is mod'''
@@ -54,16 +52,6 @@ def flt(a, p, prnt=False):
 		print(f"{toRet:,}")
 	return toRet
 
-
-#------------#
-#    MISC    #
-#------------#
-def keyz26(key):
-	'''Turns a string into a list of ints'''
-	return [(ord(c)-97) for c in key]
-
-def listPrimes(n):
-	pass
 
 #-------------#
 #    NOTES    #
