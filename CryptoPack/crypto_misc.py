@@ -1,8 +1,10 @@
 ## Author:	Owen Cocjin
-## Version:	1.0
+## Version:	1.1
 ## Date:	14/01/20
 ## Notes:
+##	- Updated Terms to allow blank Terms initialization (makes a '0' term)
 
+from . import *
 #---------------#
 #    CLASSES    #
 #---------------#
@@ -45,7 +47,6 @@ class Polynomial():
 	def __sub__(self, other):
 		'''Subtracts other from self by inverting all term signs in other, then adding'''
 		tempTerms=other.getTerms()
-		[print(i) for i in tempTerms]
 		tempTerms=[i*-1 for i in tempTerms]
 		toRet=self+Polynomial(*tempTerms)
 		return Polynomial(*toRet)
@@ -96,9 +97,103 @@ class Polynomial():
 	def getTerms(self):
 		return self.terms
 
+class Term():
+	'''Define a term for a polynomial'''
+	def __init__(self, t="0"):
+		t=str(t)  #Make t a string
+		#Try to figure out passed string "t"
+		try:
+			self.x=t.find('x')  #Find x, if it exists
+			self.c=t.find('^')  #Find ^, if it exists
+
+			#Set coefficient and degree depending on if x and ^ were found
+			self.coeff=int(t[:self.x]) if self.x>0 else 1
+			self.degree=int(t[self.c+1:]) if self.c>-1 else 1
+
+			#Assume entire t is coefficient if x and ^ weren't found
+			if self.x==self.c==-1:
+				self.coeff=int(t)
+				self.degree=0
+
+			#Errors for certain conditions
+			elif self.degree<0:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (degree must be >=0. Setting to 0)!")
+				self.degree=0
+			elif self.x!=len(t)-1 and self.c==-1:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (invalid degree declaration. Setting to 0)!")
+				self.degree=0
+			elif self.c>0 and self.x==-1:
+				raise ValueError(f"Invalid term passed: {self.coeff}x^{self.degree} (invalid coefficient declatration. Setting to 1)!")
+				self.coeff=1
+		except ValueError as e:
+			print(f"[|X: Term]: {e}")
+			return
+			#exit(1)
+
+	def __str__(self):
+		'''Returns (BLANK) if either coeff or degree are None (this is probably due to an incorrect term being set)'''
+		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
+		return f"({self.coeff}{t})"
+
+	def __add__(self, other):
+		'''Adds if degree the same. Returns a Term object'''
+		if self.degree==other.getDegree():
+			return Term(f"{self.coeff+other.getCoeff()}x^{self.degree}")
+		else:
+			return False
+
+	def __sub__(self, other):
+		'''Subtracts if degree the same. Returns a Term object'''
+		if self.degree==other.getDegree():
+			return Term(f"{self.coeff-other.getCoeff()}x^{self.degree}")
+
+	def __mul__(self, other):
+		'''Multiply terms'''
+		other=Term(str(other)) if type(other)==int else other
+		return Term(f"{self.coeff*other.getCoeff()}x^{self.degree+other.getDegree()}")
+
+	def __eq__(self, other):
+		return (self.coeff, self.degree)==(other.getCoeff(), other.getDegree())
+
+	def stats(self):
+		'''Prints __dict__, but a little prettier than just calling __dict__'''
+		return self.__dict__
+
+	def setCoeff(self, new):
+		self.coeff=new
+	def getCoeff(self):
+		return self.coeff
+
+	def setDegree(self, new):
+		'''Degree can't be negative'''
+		self.degree=int(new) if new>=0 else None
+	def getDegree(self):
+		return self.degree
+
+	def getPackage(self):
+		'''Returns self as a string (can be used as input for another Term)'''
+		t=f"x^{self.degree}" if self.degree>0 and self.coeff!=0 else ''
+		return f"{self.coeff}{t}"
+
+
 #-----------------#
 #    FUNCTIONS    #
 #-----------------#
 def keyz26(key):
-	'''Turns a string into a list of ints'''
+	'''Returns a string into a list of ints'''
 	return [(ord(c)-97) for c in key]
+
+def isPrime(p):
+	'''Return True if n is prime'''
+	p1=Polynomial(Term("x"), Term("-1"))**p
+	p2=Polynomial(Term(f"x^{p}"), Term(f"-1"))
+	for i in p1-p2:
+		if i.getCoeff()%p!=0:
+			return False
+	return True
+
+def primeFactors(p):
+	#!!!UNDER CONSTRUCTION!!!#
+	'''Returns a list of primes, representing the prime factorization of p'''
+	primes=[i for i in range(p) if isPrime(i+1)]
+	return primes
