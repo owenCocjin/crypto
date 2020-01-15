@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	1.0
-## Date:	10/01/20
+## Version:	1.1
+## Date:	14/01/20
 ## Notes:
+##	- Updated flt()
+
+from .crypto_misc import isPrime
 
 def ea(a, b, log=-1):
 	'''Euclidean Algorithm'''
@@ -16,16 +19,14 @@ def ea(a, b, log=-1):
 	#Recursive if r!=0. Return A list with something (last log is discarded as it isn't used)
 	return ea(b, r, log) if r!=0 else (b, log)
 
-def et(r, flsh=False):
-	'''UNDER CONSTRUCTION!'''
+def et(r, prnt=False):
 	'''Euler's totient. Returns the number of coprime ints to n and a list of them'''
 	toRet=[]
 	for i in range(r):
 		if ea(i, r)[0]==1:
-			print(i) if flsh else False  #Prints as numbers are generated. Useful for larger numbers
+			print(i) if prnt else False  #Prints as numbers are generated. Useful for larger numbers
 			toRet.append(i)
 	return len(toRet), toRet
-
 
 def feea(a, b, *, prnt=False, s=False):
 	'''Fast Extended Euclidean Algorithm. Returns the gcd and inverse(b mod a). When s==True, assumes the greater number is mod, otherwise "a" is mod'''
@@ -46,11 +47,12 @@ def feea(a, b, *, prnt=False, s=False):
 	return (r[-1], t[-1] if t[-1]>=0 else t[-1]%a) if r[-1]==1 else (t[-2], t[-2])  #Handles non-coprime pairs. Handles negative inverses (by modding them with whatever it thinks is the mod)
 
 def flt(a, p, prnt=False):
-	'''Fermat's Little Theorum'''
-	toRet=a**(p-2)
+	'''Fermat's Little Theorum. Returns the flt%p and boolean if p is prime.
+If p is prime, for all int(a): a^p-a%p=0. Subjective to Carmichael Numbers (try 561 (3*11*17))'''
+	toRet=a**p-a
 	if prnt:
 		print(f"{toRet:,}")
-	return toRet
+	return toRet%p, True if toRet%p==0 else False
 
 
 #-------------#
