@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	1.1
-## Date:	14/01/20
+## Version:	1.11
+## Date:	16/01/20
 ## Notes:
 ##	- Updated flt()
 
 from .crypto_misc import isPrime
 
 def ea(a, b, log=-1):
-	'''Euclidean Algorithm'''
+	'''Euclidean Algorithm.
+Returns gcd(a, b) and the log of all iterations (-1 if no list was passed)'''
 	#Remainder
 	r=a%b
-	#Multiple   4178,
+	#Multiple
 	m=int(a/b)
 	#Save variables to log if required
 	if type(log)==list:
@@ -20,7 +21,8 @@ def ea(a, b, log=-1):
 	return ea(b, r, log) if r!=0 else (b, log)
 
 def et(r, prnt=False):
-	'''Euler's totient. Returns the number of coprime ints to n and a list of them'''
+	'''Euler's totient.
+Returns the number of coprime ints to n and a list of them'''
 	toRet=[]
 	for i in range(r):
 		if ea(i, r)[0]==1:
