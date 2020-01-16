@@ -1,10 +1,12 @@
 ## Author:	Owen Cocjin
-## Version:	1.1
-## Date:	14/01/20
+## Version:	1.12
+## Date:	16/01/20
 ## Notes:
 ##	- Updated Terms to allow blank Terms initialization (makes a '0' term)
+##	- Added patdown
 
 from . import *
+import math
 #---------------#
 #    CLASSES    #
 #---------------#
@@ -179,18 +181,28 @@ class Term():
 #-----------------#
 #    FUNCTIONS    #
 #-----------------#
+def isPrime(p, l=False):
+	'''Return True if n is prime. If l==True, compute long way (x-1)^P-(x^p-1), but is 100% accurate'''
+	if l:
+		p1=Polynomial(Term("x"), Term("-1"))**p
+		p2=Polynomial(Term(f"x^{p}"), Term(f"-1"))
+		for i in p1-p2:
+			if i.getCoeff()%p!=0:
+				return False, -1
+		return True, 1
+	else:
+		for i in range(2, (math.ceil(math.sqrt(p)) if p>5 else p)):
+			if p%i==0:
+				return False, i
+		return True, 1
+
 def keyz26(key):
-	'''Returns a string into a list of ints'''
+	'''Turns a string into a list of ints'''
 	return [(ord(c)-97) for c in key]
 
-def isPrime(p):
-	'''Return True if n is prime'''
-	p1=Polynomial(Term("x"), Term("-1"))**p
-	p2=Polynomial(Term(f"x^{p}"), Term(f"-1"))
-	for i in p1-p2:
-		if i.getCoeff()%p!=0:
-			return False
-	return True
+def patdown(word):
+	'''Removes non-alpha chars and makes all chars lowercase (because most of these ciphers only work on lowercase charset)'''
+	return ''.join([c.lower() if 0<=ord(c)-65<=25 or 0<=ord(c)-97<=25 else '' for c in word])
 
 def primeFactors(p):
 	#!!!UNDER CONSTRUCTION!!!#
