@@ -154,7 +154,6 @@ Decryption MUST be list of ints (given by encryption)'''
 
 		#Convert string to list of ints
 		temp=[ord(i)-96 for i in self.word] if type(self.word)==str else self.word
-
 		for m in temp:
 			vprint(f"{m}: {self.letters[(m)%27]}={m**self.e%self.n}")
 			self.converted.append(m**self.e%self.n)
@@ -168,29 +167,6 @@ Decryption MUST be list of ints (given by encryption)'''
 		self.encry()
 		self.converted=''.join([self.letters[i%27] for i in self.converted])
 		return self.converted
-
-	def generate(self):
-		'''Generated a private/public keypair given p & q. Return e, d, n'''
-		if not isPrime(self.key[0])[0]*isPrime(self.key[1])[0]:
-			print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q MUST be prime)!")
-			exit()
-		self.n=self.key[0]*self.key[1]
-		totient=et(self.n)
-		#Get e (second largest coprime between n and et(n). If largest, e and d will always be the same)
-		for i in reversed(et(totient[0])[1][:-1]):
-			if i in totient[1]:
-				self.e=i
-				break
-
-		#Get d
-		counter=2
-		while True:
-			if self.e*counter%totient[0]==1:
-				self.d=counter
-				break
-			counter+=1
-
-		return self.e, self.d, self.n
 
 
 #-------------#

@@ -18,11 +18,12 @@ def main():
 	mode=PARSER["mode"]
 	word=PARSER["word"]
 	key=PARSER["key"]
-	if not mode or not key:  #Print help if any of key, mode, or word are missing
-		if PARSER["generate"]:
-			pass
-		else:
-			hFunc()
+
+	if PARSER["generate"] and key!='':
+		print(PARSER["generate"](key))
+		exit()
+	if not mode or not word or not key:  #Print help if any of key, mode, or word are missing
+		hFunc()
 
 	if mode in ['0', "shift"]:
 		print(ShiftCipher(word, key))
@@ -33,10 +34,7 @@ def main():
 	elif mode in ['3', "vigenere"]:
 		print(VigenereCipher(word, key, decrypt))
 	elif mode in ['4', "rsa"]:
-		if PARSER["generate"]:
-			print(RSAcrypto('', key).generate())
-		else:
-			print(RSAcrypto(word, key, decrypt))
+		print(RSAcrypto(word, key, decrypt))
 	else:  #Print help if invalid mode passed
 		hFunc()
 
