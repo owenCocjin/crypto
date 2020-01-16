@@ -1,10 +1,12 @@
 ## Author:	Owen Cocjin
-## Version:	1.0
-## Date:	10/01/20
+## Version:	1.1
+## Date:	16/01/20
 ## Notes:
+##	- Added 'generate' flag to generate keypairs (when applicable)
 
 from progMenu import menu, MenuEntry
 from .crypto_misc import keyz26, patdown
+from .crypto_funcs import rsaGen
 
 #-------------#
 #    FUNCS    #
@@ -13,13 +15,18 @@ def dFunc():
 	return True
 
 def gFunc():
-	return True
+	mode=menu.sgetAssigned(['m', "mode"])
+	if mode in ['4', "rsa"]:
+		return rsaGen
+
+	return False
 
 def hFunc():
 	print('''\033[33mUsage:\033[0m crypto --mode=<m> --word=<w> --key=<k> [-dhkmw] [OPTIONS]
 \tA compilation of ciphers and crypto algos!
 \033[33mArguments:\033[0m
 \t-d, --decrypt\tDecrypt instead of encrypt (default)
+\t-g, --generate\tGenerate keypairs (if applicable)
 \t-h, --help\tPrints this page
 \t-k, --key=<k>\tSets key based on mode. Takes from stdin if no arg
 \t-m, --mode=<m>\tSets encryption mode:
@@ -39,6 +46,8 @@ def kFunc(k=None):
 	mode=menu.sgetAssigned(['m', "mode"]).lower()
 	#Try splitting into ints and stripping
 	try:
+		if k=='':
+			raise Exception
 		k=[int(i.strip()) for i in k.split(',')]
 	except ValueError:
 		#Turn into ints if string passed
