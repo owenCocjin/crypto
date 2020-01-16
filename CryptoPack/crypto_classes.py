@@ -1,8 +1,9 @@
 ## Author:	Owen Cocjin
-## Version:	1.01
-## Date:	15/01/20
+## Version:	1.1
+## Date:	16/01/20
 ## Notes:
 ##	- Moved patdown to crypto_misc
+##	- Added RSAcrypto
 
 from .crypto_funcs import feea, et, ea
 from .crypto_misc import patdown, keyz26, isPrime

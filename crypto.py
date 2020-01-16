@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	1.1
-## Date:	15/01/20
+## Version:	1.2
+## Date:	16/01/20
 ## Notes:
-##	- Added transpo, vigenere
+##	- Added RSA
+##	- Caught 'generate' flag
 
 from progMenu import menu, vprint, printFAA
 from cryptoPack import *
