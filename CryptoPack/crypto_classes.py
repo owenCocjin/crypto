@@ -1,33 +1,37 @@
 ## Author:	Owen Cocjin
-## Version:	1.0
-## Date:	10/01/20
+## Version:	1.01
+## Date:	15/01/20
 ## Notes:
+##	- Moved patdown to crypto_misc
 
-from cryptoPack.crypto_funcs import feea
+from .crypto_funcs import feea, et, ea
+from .crypto_misc import patdown, keyz26, isPrime
+from progMenu import vprint
 
 class Crypt():
-	def __init__(self, name, word, key, letters=None):
+	def __init__(self, name, word, key, d=None, letters=None):
 		self.name=name
 		self.word=word
 		self.key=key
 		self.converted=""
+		self.d=d
+		self.cryMode="E" if not d else "D"
 		#letters are more for future uses. Somewhat useless now :(
 		self.letters=[chr(i+97) for i in range(26)] if letters==None else letters
 
 	def __str__(self):
-		return f"{self.name}\n{self.word} | {self.key}"
-
-	def patdown(self, word=None):
-		'''Removes non-alpha chars and makes all chars lowercase (because most of these ciphers only work on lowercase charset)'''
-		return ''.join([c.lower() if 0<=ord(c)-65<=25 or 0<=ord(c)-97<=25 else '' for c in (word if word else self.word)])
+		l1=f"\033[32mMODE: \033[0m{self.name}"+f" ({self.cryMode})"*(True if self.d!=None else False)
+		l2=f"\033[33mKEY:  \033[0m{self.key}"
+		l3=f"{self.word} -> {self.converted}"
+		return f"{l1}\n{l2}\n{l3}\n"
 
 	def encry(self):
-		'''Encrypt word with key'''
+		'''Encrypt word with key and set self.converted to result'''
 		self.converted="DEFAULT ENCRYPT"
 		return self.converted
 
 	def decry(self):
-		'''Decrypt word with key'''
+		'''Decrypt word with key and set self.converted to result'''
 		self.converted="DEFAULT DECRYPT"
 		return self.converted
 
@@ -58,14 +62,8 @@ class Crypt():
 
 class ShiftCipher(Crypt):
 	def __init__(self, word='', key=None):
-		Crypt.__init__(self, "Shift Cipher", self.patdown(word), key)
+		Crypt.__init__(self, "Shift Cipher", word, key)
 		self.encry()
-
-	def __str__(self):
-		l1=f"\033[32mMODE: \033[0m{self.name}"
-		l2=f"\033[33mKEY:  \033[0m{self.key}"
-		l3=f"{self.word} -> {self.converted}"
-		return f"{l1}\n{l2}\n{l3}\n"
 
 	def encry(self):
 		'''f(M)=(M+b)mod26'''
@@ -73,10 +71,9 @@ class ShiftCipher(Crypt):
 		return self.converted
 
 class AffineCipher(Crypt):
-	def __init__(self, word='', key=None, d=False):
-		Crypt.__init__(self, "Affine Cipher", self.patdown(word), key)
-		self.encry() if not d else self.decry()
-		self.cryMode="E" if not d else "D"
+	def __init__(self, word='', key=None, dFlag=False):
+		Crypt.__init__(self, "Affine Cipher", word, key, dFlag)
+		self.encry() if not dFlag else self.decry()
 
 	def __str__(self):
 		l1=f"\033[32mMODE: \033[0m{self.name} ({self.cryMode})"
@@ -96,16 +93,9 @@ class AffineCipher(Crypt):
 		return self.converted
 
 class VigenereCipher(Crypt):
-	def __init__(self, word='', key=None, d=False):
-		Crypt.__init__(self, "Vigenere Cipher", self.patdown(word), key)
-		self.cryMode="E" if not d else "D"
-		self.encry() if not d else self.decry()
-
-	def __str__(self):
-		l1=f"\033[32mMODE: \033[0m{self.name} ({self.cryMode})"
-		l2=f"\033[33mKEY:  \033[0m{self.key}"
-		l3=f"{self.word} -> {self.converted}"
-		return f"{l1}\n{l2}\n{l3}\n"
+	def __init__(self, word='', key=None, dFlag=False):
+		Crypt.__init__(self, "Vigenere Cipher", word, key, dFlag)
+		self.encry() if not dFlag else self.decry()
 
 	def encry(self):
 		'''f(M)=(M+k)mod26'''
@@ -123,14 +113,8 @@ class VigenereCipher(Crypt):
 
 class TranspoCipher(Crypt):
 	def __init__(self, word='', key=None):
-		Crypt.__init__(self, "Transposition Cipher", self.patdown(word), key)
+		Crypt.__init__(self, "Transposition Cipher", word, key)
 		self.encry()
-
-	def __str__(self):
-		l1=f"\033[32mMODE: \033[0m{self.name}"
-		l2=f"\033[33mKEY:  \033[0m{self.key}"
-		l3=f"{self.word} -> {self.converted}"
-		return f"{l1}\n{l2}\n{l3}\n"
 
 	def encry(self):
 		'''Uses the key as a permutation, mutates the word by blocks'''
@@ -146,15 +130,91 @@ class TranspoCipher(Crypt):
 
 		return self.converted
 
+class RSAcrypto(Crypt):
+	'''Takes a word or list of ints as word, and e/d and n as key.
+Decryption MUST be list of ints (given by encryption)'''
+	def __init__(self, word='', key=None, decrypt=None):
+		Crypt.__init__(self, "RSA", word, key, decrypt)
+		self.letters=['']+self.letters
+		self.e=key[0]
+		self.n=key[1]
+		self.encry() if not decrypt else self.decry()
 
+	def __str__(self):
+		l1=f"\033[32mMODE: \033[0m{self.name} ({self.cryMode})"
+		l2=f"\033[33mKEY:  \033[0me={self.e} | n={self.n}"
+		l3=f"\033[33mKEY:  \033[0md={self.e} | n={self.n}"
+		l4=f"{self.word} -> {self.converted}"
+		return f"{l1}\n{l3 if 'D'==self.cryMode else l2}\n{l4}\n"
+
+	def encry(self):
+		'''m^e(mod n)'''
+		self.converted=[]
+
+		#Convert string to list of ints
+		temp=[ord(i)-96 for i in self.word] if type(self.word)==str else self.word
+
+		for m in temp:
+			vprint(f"{m}: {self.letters[(m)%27]}={m**self.e%self.n}")
+			self.converted.append(m**self.e%self.n)
+
+		vprint(self.converted)
+		self.converted=','.join([str(i) for i in self.converted]) if 'E'==self.cryMode else self.converted
+		return self.converted
+
+	def decry(self):
+		'''Pretty much encrypts, but returns a string instead of an int list'''
+		self.encry()
+		self.converted=''.join([self.letters[i%27] for i in self.converted])
+		return self.converted
+
+	def generate(self):
+		'''Generated a private/public keypair given p & q. Return e, d, n'''
+		if not isPrime(self.key[0])[0]*isPrime(self.key[1])[0]:
+			print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q MUST be prime)!")
+			exit()
+		self.n=self.key[0]*self.key[1]
+		totient=et(self.n)
+		#Get e (second largest coprime between n and et(n). If largest, e and d will always be the same)
+		for i in reversed(et(totient[0])[1][:-1]):
+			if i in totient[1]:
+				self.e=i
+				break
+
+		#Get d
+		counter=2
+		while True:
+			if self.e*counter%totient[0]==1:
+				self.d=counter
+				break
+			counter+=1
+
+		return self.e, self.d, self.n
+
+
+#-------------#
+#    NOTES    #
+#-------------#
+'''
+Template Crypto class:
+
+class ClassName(Crypt):
+	def __init__(self, word='', key=None, d=False):
+		Crypt.__init__(self, "NAMEHERE", patdown(word), key)
+		self.cryMode="E" if not d else "D"
+		self.encry() if not d else self.decry()
+
+	def __str__(self):
+		l1=f"\033[32mMODE: \033[0m{self.name}"
+		l2=f"\033[33mKEY:  \033[0m{self.key}"
+		l3=f"{self.word} -> {self.converted}"
+		return f"{l1}\n{l2}\n{l3}\n"
+
+	def encry(self):
+		PUT ENCRYPTION ALGO HERE!
+
+	def decry(self):
+		PUT DECRYPTION ALGO HERE (if any)!
+'''
 if __name__=="__main__":
-	p=5
-	p1=Polynomial(*[Term(i) for i in ["x", "-1"]])
-	p1=p1**p
-	print(f"p1: {p1}")
-	p2=Polynomial(*[Term(i) for i in [f"x^{p}", "-1"]])
-	print(f"p2: {p2}")
-	rec=p1-p2
-	for i in rec:
-		print(f"{i.getCoeff()}%{p}->{i.getCoeff()%p}")
-	print(rec)
+	pass
