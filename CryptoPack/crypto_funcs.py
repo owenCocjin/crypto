@@ -57,6 +57,34 @@ If p is prime, for all int(a): a^p-a%p=0. Subjective to Carmichael Numbers (try 
 	return toRet%p, True if toRet%p==0 else False
 
 
+#------------------#
+#    GENERATION    #
+#------------------#
+def rsaGen(key):
+	'''Generated an RSA private/public keypair given p & q. Return e, d, n'''
+
+	if not isPrime(key[0])[0]*isPrime(key[1])[0]:
+		print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q MUST be prime)!")
+		exit()
+	n=key[0]*key[1]
+	totient=et(n)
+	#Get e (second largest coprime between n and et(n). If largest, e and d will always be the same)
+	for i in reversed(et(totient[0])[1][:-1]):
+		if i in totient[1]:
+			e=i
+			break
+
+	#Get d
+	counter=2
+	while True:
+		if e*counter%totient[0]==1:
+			d=counter
+			break
+		counter+=1
+
+	return {'e':e, 'd':d, 'n':n}
+
+
 #-------------#
 #    NOTES    #
 #-------------#
