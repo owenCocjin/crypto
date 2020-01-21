@@ -84,7 +84,6 @@ def wFunc(w=None):
 	try:  #List of ints
 		return [int(i.strip()) for i in w.split(',')]
 	except Exception as e:  #String
-		print(e)
 		return patdown(w)
 
 #---------------#

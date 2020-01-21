@@ -1,10 +1,10 @@
-#!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	1.11
-## Date:	16/01/20
+## Version:	1.2
+## Date:	21/01/20
 ## Notes:
-##	- Updated flt()
+##	- Fixed issue with rsaGen accepting negative p and q
 
+from progMenu import vprint
 from .crypto_misc import isPrime
 
 def ea(a, b, log=-1):
@@ -31,7 +31,10 @@ Returns the number of coprime ints to n and a list of them'''
 	return len(toRet), toRet
 
 def feea(a, b, *, prnt=False, s=False):
-	'''Fast Extended Euclidean Algorithm. Returns the gcd and inverse(b mod a). When s==True, assumes the greater number is mod, otherwise "a" is mod'''
+	'''Fast Extended Euclidean Algorithm.
+Returns the gcd and inverse(b mod a).
+When s==True, assumes the greater number is mod, otherwise "a" is mod.
+If a and b are not co-prime, will return gdc and -1'''
 	if s:  #Swaps if s==True. Mainly used if user input is not guaranteed correct
 		a, b=(b, a) if a<b else (a, b)  #Swap if a smaller than b
 	r=[a, b]
@@ -46,7 +49,7 @@ def feea(a, b, *, prnt=False, s=False):
 	if prnt:
 		print("r\ts\tt")
 		[print(f"{a}\t{b}\t{c}") for a, b, c in zip(r, s, t)]
-	return (r[-1], t[-1] if t[-1]>=0 else t[-1]%a) if r[-1]==1 else (t[-2], t[-2])  #Handles non-coprime pairs. Handles negative inverses (by modding them with whatever it thinks is the mod)
+	return (r[-1], t[-1] if t[-1]>=0 else t[-1]%a) if r[-1]==1 else (r[-2], -1)  #Handles non-coprime pairs. Handles negative inverses (by modding them with whatever it thinks is the mod)
 
 def flt(a, p, prnt=False):
 	'''Fermat's Little Theorum. Returns the flt%p and boolean if p is prime.
@@ -61,26 +64,40 @@ If p is prime, for all int(a): a^p-a%p=0. Subjective to Carmichael Numbers (try 
 #    GENERATION    #
 #------------------#
 def rsaGen(key):
-	'''Generated an RSA private/public keypair given p & q. Return e, d, n'''
-
-	if not isPrime(key[0])[0]*isPrime(key[1])[0]:
-		print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q MUST be prime)!")
+	'''Generated an RSA private/public keypair given p & q.
+Return e, d, n as a dict (mostly for clarity).
+NOTE: will ask for e which must be any int 1<e<phi(n). The program will choose the next valid e, if invalid.'''
+	if not isPrime(key[0])[0]*isPrime(key[1])[0] or key[0]<1 or key[1]<1:
+		if key[0]<1 or key[1]<1:
+			print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q must be > 1)!")
+		else:
+			print("[|X: crypto_classes:RSAcrypto:generate]: Invalid keys (both p and q MUST be prime)!")
 		exit()
+	vprint("Passed primality test!")
 	n=key[0]*key[1]
-	totient=et(n)
-	#Get e (second largest coprime between n and et(n). If largest, e and d will always be the same)
-	for i in reversed(et(totient[0])[1][:-1]):
-		if i in totient[1]:
-			e=i
-			break
+	e=d=0
+	vprint("Generating phi(n)...", end=' ')
+	tot=(key[0]-1)*(key[1]-1)
+	vprint("Done!")
 
-	#Get d
-	counter=2
-	while True:
-		if e*counter%totient[0]==1:
-			d=counter
-			break
-		counter+=1
+	#Get e from user. If e isn't coprime, will count upwards (up to phi(n))
+	try:
+		e=int(input(f"Enter e (must be <{tot}): "))
+		if e>=tot:
+			raise Exception
+		if ea(e, n)!=1 or ea(e, tot)!=1:
+			while e<tot:
+				e+=1
+				if ea(e, n)[0]==1 and ea(e, tot)[0]==1:
+					break
+	except Exception:
+		print(f"Invalid e entered (e can't be greater than {tot})!")
+		exit()
+	except:
+		print("INVALID!")
+		exit()
+
+	d=feea(tot, e)[1]
 
 	return {'e':e, 'd':d, 'n':n}
 
@@ -92,21 +109,12 @@ def rsaGen(key):
 Calculate # of private keys {a, b} for a given Affine cipher:
 	- et of whatever's modded * whatever's modded
 	- et(n)*n
+
+11, 17 (64): 42
+11, 19 (48): 34
+13, 19 (72): 57
+17, 19 (96): 56
+19, 23 (120): 96
+37, 23 (240): 96
+29, 37 (288): 171
 '''
-
-if __name__=="__main__":
-	aGCD, aLog=ea(7, 3, [])
-	bGCD, bLog=ea(26, 15, [])
-	cGCD, cLog=ea(1180, 482, [])
-
-	#print(f"7, 3:\t\t{aGCD} | {aLog}")
-	#print(f"\t\t{eea(1, 1, 1, aLog)}")
-
-	#print(f"15, 5:\t\t{bGCD} | {bLog}")
-	#print(f"\t\t{eea(1, 1, 1, bLog)}")
-
-	print(f"26, 15:\t\t{bGCD} | {bLog}")
-	print(f"\t\t{feea(26, 15)}")
-
-	print(f"1180, 482:\t{cGCD} | {cLog}")
-	print(f"\t\t{feea(1180, 482)}")
