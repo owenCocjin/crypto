@@ -6,7 +6,7 @@
 
 from progMenu import menu, MenuEntry
 from .crypto_misc import keyz26, patdown
-from .crypto_funcs import rsaGen
+from .crypto_funcs import rsaGen, diffieHellman
 
 #-------------#
 #    FUNCS    #
@@ -19,6 +19,9 @@ def gFunc():
 	if mode in ['4', "rsa"]:
 		return rsaGen
 
+	if mode in ['5', "difhel"]:
+		return diffieHellman
+
 	return False
 
 def hFunc():
@@ -26,7 +29,7 @@ def hFunc():
 \tA compilation of ciphers and crypto algos!
 \033[33mArguments:\033[0m
 \t-d, --decrypt\tDecrypt instead of encrypt (default)
-\t-g, --generate\tGenerate keypairs (if applicable)
+\t-g, --generate\tGenerate keys (if applicable)
 \t-h, --help\tPrints this page
 \t-k, --key=<k>\tSets key based on mode. Takes from stdin if no arg
 \t-m, --mode=<m>\tSets encryption mode:
@@ -34,7 +37,8 @@ def hFunc():
 \t\t\t\t- 1/affine: Affine Cipher
 \t\t\t\t- 2/vigenere: Vigenere Cipher
 \t\t\t\t- 3/transpo: Transposition Cipher
-\t\t\t\t- 4/rsa: RSA\n
+\t\t\t\t- 4/rsa: RSA
+\t\t\t\t- 5/difhel: Diffie-Hellman (Requires -g flag)\n
 \t-w, --word=<w>\tSets the plaintext word. Takes from stdin if no arg
 ''')
 	exit(0)
@@ -59,7 +63,7 @@ def kFunc(k=None):
 	if mode in ['0', "shift"]:  #Single key
 		return k[0]
 
-	elif mode in ['1', '2', "affine", "rsa"]:  #Double key
+	elif mode in ['1', '2', '5', "affine", "rsa", "difhel"]:  #Double key
 		if len(k)<2:
 			print("[|X: kFunc:KeyError]: Invalid key (2 required)!")
 			exit()
