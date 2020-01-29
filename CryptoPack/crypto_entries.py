@@ -35,8 +35,8 @@ def hFunc():
 \t-m, --mode=<m>\tSets encryption mode:
 \t\t\t\t- 0/shift: Shift Cipher
 \t\t\t\t- 1/affine: Affine Cipher
-\t\t\t\t- 2/vigenere: Vigenere Cipher
-\t\t\t\t- 3/transpo: Transposition Cipher
+\t\t\t\t- 2/transpo: Transposition Cipher
+\t\t\t\t- 3/vigenere: Vigenere Cipher
 \t\t\t\t- 4/rsa: RSA
 \t\t\t\t- 5/difhel: Diffie-Hellman (Requires -g flag)\n
 \t-w, --word=<w>\tSets the plaintext word. Takes from stdin if no arg
