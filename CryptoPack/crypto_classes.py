@@ -6,7 +6,7 @@
 ##	- Added RSAcrypto
 
 from .crypto_funcs import feea, et, ea
-from .crypto_misc import patdown, keyz26, isPrime
+from .crypto_misc import patdown, keyz26, isPrime, fme, Letters
 from progMenu import vprint
 
 class Crypt():
@@ -18,7 +18,7 @@ class Crypt():
 		self.d=d
 		self.cryMode="E" if not d else "D"
 		#letters are more for future uses. Somewhat useless now :(
-		self.letters=[chr(i+97) for i in range(26)] if letters==None else letters
+		self.letters=Letters("a-z") if letters==None else letters
 
 	def __str__(self):
 		l1=f"\033[32mMODE: \033[0m{self.name}"+f" ({self.cryMode})"*(True if self.d!=None else False)
@@ -68,7 +68,7 @@ class ShiftCipher(Crypt):
 
 	def encry(self):
 		'''f(M)=(M+b)mod26'''
-		self.converted=''.join([self.letters[(self.letters.index(c)+self.key)%26] for c in self.word])
+		self.converted=''.join([self.letters[(self.letters.index(c)+self.key)%len(self.letters)] for c in self.word])
 		return self.converted
 
 class AffineCipher(Crypt):
@@ -84,13 +84,13 @@ class AffineCipher(Crypt):
 
 	def encry(self):
 		'''f(M)=(aM+b)mod26'''
-		self.converted=''.join([self.letters[(self.key[0]*(ord(c)-97)+self.key[1])%26] for c in self.word])
+		self.converted=''.join([self.letters[(self.key[0]*(self.letters.index(c))+self.key[1])%len(self.letters)] for c in self.word])
 		return self.converted
 
 	def decry(self):
 		'''f(M)=inverse(a)(C-b)mod26'''
 		inverse=feea(26, self.key[0])[1]
-		self.converted=''.join([self.letters[inverse*((ord(c)-97)-self.key[1])%26] for c in self.word])
+		self.converted=''.join([self.letters[inverse*((self.letters.index(c))-self.key[1])%len(self.letters)] for c in self.word])
 		return self.converted
 
 class VigenereCipher(Crypt):
@@ -136,7 +136,7 @@ class RSAcrypto(Crypt):
 Decryption MUST be list of ints (given by encryption)'''
 	def __init__(self, word='', key=None, decrypt=None):
 		Crypt.__init__(self, "RSA", word, key, decrypt)
-		self.letters=['']+self.letters
+		self.letters=Letters("a-z", pad=2)
 		self.e=key[0]
 		self.n=key[1]
 		self.encry() if not decrypt else self.decry()
@@ -153,10 +153,10 @@ Decryption MUST be list of ints (given by encryption)'''
 		self.converted=[]
 
 		#Convert string to list of ints
-		temp=[ord(i)-96 for i in self.word] if type(self.word)==str else self.word
+		temp=[self.letters.index(i) for i in self.word] if type(self.word)==str else self.word
 		for m in temp:
-			vprint(f"{m}: {self.letters[(m)%27]}={m**self.e%self.n}")
-			self.converted.append(m**self.e%self.n)
+			vprint(f"{m}: {self.letters[(m)%len(self.letters)]}={m**self.e%self.n}")
+			self.converted.append(fme(m, self.e, self.n))#(m**self.e%self.n)
 
 		vprint(self.converted)
 		self.converted=','.join([str(i) for i in self.converted]) if 'E'==self.cryMode else self.converted
@@ -165,7 +165,7 @@ Decryption MUST be list of ints (given by encryption)'''
 	def decry(self):
 		'''Pretty much encrypts, but returns a string instead of an int list'''
 		self.encry()
-		self.converted=''.join([self.letters[i%27] for i in self.converted])
+		self.converted=''.join([self.letters[i%len(self.letters)] for i in self.converted])
 		return self.converted
 
 
@@ -179,19 +179,21 @@ class ClassName(Crypt):
 	def __init__(self, word='', key=None, d=False):
 		Crypt.__init__(self, "NAMEHERE", patdown(word), key)
 		self.cryMode="E" if not d else "D"
-		self.encry() if not d else self.decry()
+		self.encry() if not d else self.decry()  #Remove everything after self.encry() if no decryption function
 
 	def __str__(self):
 		l1=f"\033[32mMODE: \033[0m{self.name}"
 		l2=f"\033[33mKEY:  \033[0m{self.key}"
-		l3=f"{self.word} -> {self.converted}"
-		return f"{l1}\n{l2}\n{l3}\n"
+		ln=f"{self.word} -> {self.converted}"
+		return f"{l1}\n{l2}\n{ln}\n"
 
 	def encry(self):
-		PUT ENCRYPTION ALGO HERE!
+		#PUT ENCRYPTION ALGO HERE!
+		pass
 
-	def decry(self):
-		PUT DECRYPTION ALGO HERE (if any)!
+	def decry(self):  #Remove if no decryption function
+		#PUT DECRYPTION ALGO HERE (if any)!
+		pass
 '''
 if __name__=="__main__":
 	pass
