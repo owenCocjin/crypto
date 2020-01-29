@@ -1,8 +1,8 @@
 ## Author:	Owen Cocjin
-## Version:	1.2
-## Date:	21/01/20
+## Version:	1.3
+## Date:	27/01/20
 ## Notes:
-##	- Fixed issue with rsaGen accepting negative p and q
+##	- Added Diffie-Hellman keygen
 
 from progMenu import vprint
 from .crypto_misc import isPrime
@@ -101,6 +101,16 @@ NOTE: will ask for e which must be any int 1<e<phi(n). The program will choose t
 
 	return {'e':e, 'd':d, 'n':n}
 
+def diffieHellman(key):
+	'''Key is in format: p, g'''
+	p=key[0]
+	g=key[1]
+	a=int(input("Enter secret power: "))
+	aKey=g**a%p
+	print(f"Send this to other: \033[1m{aKey}\033[0m")
+	bKey=int(input("Enter b: "))
+	s=bKey**a%p
+	return {'a':a, 'aKey':aKey, 's':s}
 
 #-------------#
 #    NOTES    #
