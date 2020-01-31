@@ -6,7 +6,7 @@
 ##	- Added RSAcrypto
 
 from .crypto_funcs import feea, et, ea
-from .crypto_misc import patdown, keyz26, isPrime, fme, Letters
+from .crypto_misc import patdown, keyz26, isPrime, fme
 from progMenu import vprint
 
 class Crypt():
@@ -18,7 +18,7 @@ class Crypt():
 		self.d=d
 		self.cryMode="E" if not d else "D"
 		#letters are more for future uses. Somewhat useless now :(
-		self.letters=Letters("a-z") if letters==None else letters
+		self.letters=[chr(i) for i in range(97, 123)] if letters==None else letters
 
 	def __str__(self):
 		l1=f"\033[32mMODE: \033[0m{self.name}"+f" ({self.cryMode})"*(True if self.d!=None else False)
@@ -102,14 +102,14 @@ class VigenereCipher(Crypt):
 		'''f(M)=(M+k)mod26'''
 		self.converted=''
 		for i, c in enumerate(self.word):
-			self.converted+=self.letters[((ord(c)-97)+self.key[i%len(self.key)])%26]
+			self.converted+=self.letters[(self.letters.index(c)+self.key[i%len(self.key)])%26]
 		return self.converted
 
 	def decry(self):
 		'''f(M)=(M-k)mod26'''
 		self.converted=''
 		for i, c in enumerate(self.word):
-			self.converted+=self.letters[((ord(c)-97)-self.key[i%len(self.key)])%26]
+			self.converted+=self.letters[(self.letters.index(c)-self.key[i%len(self.key)])%26]
 		return self.converted
 
 class TranspoCipher(Crypt):
@@ -136,7 +136,7 @@ class RSAcrypto(Crypt):
 Decryption MUST be list of ints (given by encryption)'''
 	def __init__(self, word='', key=None, decrypt=None):
 		Crypt.__init__(self, "RSA", word, key, decrypt)
-		self.letters=Letters("a-z", pad=2)
+		self.letters=['', '']+[chr(i) for i in range(97, 123)]
 		self.e=key[0]
 		self.n=key[1]
 		self.encry() if not decrypt else self.decry()
