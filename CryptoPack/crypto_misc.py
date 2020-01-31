@@ -1,6 +1,6 @@
 ## Author:	Owen Cocjin
-## Version:	1.3
-## Date:	25/01/20
+## Version:	1.3.1
+## Date:	31/01/20
 ## Notes:
 ##	- Added division to Term and Polynomial
 ##	- Added TermError class for general errors with Terms
@@ -8,7 +8,6 @@
 ##	- Added __gt__, __lt__, __ge__, __le__ to Term
 ##	- Fixed error with iterating through Polynomials (didn't reser internal counter)
 ##	- Added fme() (fast modular exponentiation)
-##	- Added Letters class
 ##	- Added subtraction of Polynomials
 ##	- Added subscripting of Polynomials
 ##	- Added division of Polynomials

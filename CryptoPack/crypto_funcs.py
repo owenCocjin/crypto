@@ -1,6 +1,6 @@
 ## Author:	Owen Cocjin
-## Version:	1.3
-## Date:	27/01/20
+## Version:	1.3.1
+## Date:	31/01/20
 ## Notes:
 ##	- Added Diffie-Hellman keygen
 
