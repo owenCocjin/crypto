@@ -1,12 +1,13 @@
 ## Author:	Owen Cocjin
-## Version:	1.1
-## Date:	16/01/20
+## Version:	1.2
+## Date:	08/02/20
 ## Notes:
-##	- Added 'generate' flag to generate keypairs (when applicable)
+##	- Updated hFunc
+##	- Added dlp to keygen
+##	- Made kFunc just return key
 
-from progMenu import menu, MenuEntry
-from .crypto_misc import keyz26, patdown
-from .crypto_funcs import rsaGen, diffieHellman
+from progMenu import menu, MenuEntry, vprint
+from .crypto_funcs import diffieHellman, ea, key_parse, keyz26, patdown, RuleError, rsaGen
 
 #-------------#
 #    FUNCS    #
@@ -18,9 +19,10 @@ def gFunc():
 	mode=menu.sgetAssigned(['m', "mode"])
 	if mode in ['4', "rsa"]:
 		return rsaGen
-
 	if mode in ['5', "difhel"]:
 		return diffieHellman
+	if mode in ['6', 'dlp']:
+		return dlp
 
 	return False
 
@@ -38,7 +40,8 @@ def hFunc():
 \t\t\t\t- 2/transpo: Transposition Cipher
 \t\t\t\t- 3/vigenere: Vigenere Cipher
 \t\t\t\t- 4/rsa: RSA
-\t\t\t\t- 5/difhel: Diffie-Hellman (Requires -g flag)\n
+\t\t\t\t- 5/difhel: Diffie-Hellman (Requires -g flag)
+\t\t\t\t- 6/dlp: Discrete Log Problem (Requires -g flag)\n
 \t-w, --word=<w>\tSets the plaintext word. Takes from stdin if no arg
 ''')
 	exit(0)
@@ -47,38 +50,7 @@ def hFunc():
 def kFunc(k=None):
 	'''Sets the key based on the mode'''
 	k=input("Key: ") if not k else k
-	mode=menu.sgetAssigned(['m', "mode"]).lower()
-	#Try splitting into ints and stripping
-	try:
-		if k=='':
-			raise Exception
-		k=[int(i.strip()) for i in k.split(',')]
-	except ValueError:
-		#Turn into ints if string passed
-		k=keyz26(k)
-	except:
-		print("[|X: kFunc:KeyError]: Invalid key!")
-		exit()
-
-	if mode in ['0', "shift"]:  #Single key
-		return k[0]
-
-	elif mode in ['1', '2', '5', "affine", "rsa", "difhel"]:  #Double key
-		if len(k)<2:
-			print("[|X: kFunc:KeyError]: Invalid key (2 required)!")
-			exit()
-		else:
-			return k[:2]
-
-	elif mode in ['2', "transpo"]:  #Keys in a set (0..len(key))
-		for i in k:
-			if len(k)<i or i<0 or k.count(i)!=1:
-				print(f"[|X: kFunc:KeyError]: Invalid key!")
-				exit()
-		return k
-
-	else:
-		return k
+	return k
 
 def mFunc(m):
 	return m.lower()
