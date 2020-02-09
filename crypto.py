@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	1.2
-## Date:	16/01/20
+## Version:	1.3
+## Date:	08/02/20
 ## Notes:
-##	- Added RSA
-##	- Caught 'generate' flag
+##	- Updated error catching from main
 
 from progMenu import menu, vprint, printFAA
 from cryptoPack import *
@@ -18,8 +17,7 @@ def main():
 	mode=PARSER["mode"]
 	word=PARSER["word"]
 	key=PARSER["key"]
-
-	if PARSER["generate"] and key!='':
+	if PARSER["generate"] and key:  #Generate keys if g flas and keys not empty
 		print(PARSER["generate"](key))
 		exit()
 	if not mode or not word or not key:  #Print help if any of key, mode, or word are missing
@@ -39,4 +37,8 @@ def main():
 		hFunc()
 
 if __name__=="__main__":
-	main()
+	#main()
+	try:
+		main()
+	except Exception as e:
+		print(f"[|X: crypto:__main__]:{type(e).__name__}: {str(e).strip(chr(34))}")
