@@ -29,8 +29,9 @@ $ python -c 'import sys; print(sys.path)'
 ## Usage
 
 - If running script, use `./crypto.py -h` to show all commands.
-- If installed as a library (moved *CryptoPack* to python path), use as any other library:
+~~- If installed as a library (moved *CryptoPack* to python path), use as any other library:
 
 ```
 from CryptoPack import feea  #Fast Euclidean Algo
 print(feea)
+```~~
