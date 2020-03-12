@@ -6,8 +6,8 @@
 ##	- Fixed import of progMenu
 
 from progMenu.progMenu import menu, vprint, printFAA
-from cryptoPack import *
-from cryptoPack.crypto_entries import *
+from CryptoPack import *
+from CryptoPack.crypto_entries import *
 PARSER=menu.parse(True)
 vprint.setVerbose(menu.findFlag(['v', "verbose"]))
 
