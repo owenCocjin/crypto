@@ -3,9 +3,9 @@
 ## Version:	1.3
 ## Date:	08/02/20
 ## Notes:
-##	- Updated error catching from main
+##	- Fixed import of progMenu
 
-from progMenu import menu, vprint, printFAA
+from progMenu.progMenu import menu, vprint, printFAA
 from cryptoPack import *
 from cryptoPack.crypto_entries import *
 PARSER=menu.parse(True)
@@ -13,6 +13,7 @@ vprint.setVerbose(menu.findFlag(['v', "verbose"]))
 
 def main():
 	vprint(PARSER)
+	printFAA()
 	decrypt=bool(PARSER["decrypt"])
 	mode=PARSER["mode"]
 	word=PARSER["word"]

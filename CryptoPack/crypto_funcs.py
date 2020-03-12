@@ -1,13 +1,11 @@
 ## Author:	Owen Cocjin
-## Version:	1.5
-## Date:	08/02/20
+## Version:	1.5.1
+## Date:	12/03/20
 ## Notes:
-##	- Migrated all of crypto_misc over here
-##	- Added dlp()
-##	- Added key_parse
+##	- Fixed import of progMenu
 
 from . import *
-from progMenu import vprint
+from progMenu.progMenu import vprint
 import math, time, re
 
 #-----------------#
@@ -15,7 +13,7 @@ import math, time, re
 #-----------------#
 def ea(a, b, log=-1):
 	'''Euclidean Algorithm.
-Returns gcd(a, b) and the log of all iterations (-1 if no list was passed)'''
+Returns gcd(a, b) and the log of all iterations (-1 if no list was passed).'''
 	#Remainder
 	r=a%b
 	#Multiple
@@ -40,7 +38,8 @@ def feea(a, b, *, prnt=False, s=False):
 	'''Fast Extended Euclidean Algorithm.
 Returns the gcd and inverse(b mod a).
 When s==True, assumes the greater number is mod, otherwise "a" is mod.
-If a and b are not co-prime, will return gdc and -1'''
+If a and b are not co-prime, will return gdc and -1.
+Formula: r='''
 	if s:  #Swaps if s==True. Mainly used if user input is not guaranteed correct
 		a, b=(b, a) if a<b else (a, b)  #Swap if a smaller than b
 	r=[a, b]
@@ -171,7 +170,8 @@ def primeFactors(p):
 #    GENERATION    #
 #------------------#
 def diffieHellman(key):
-	'''Key is in format: p, g'''
+	'''Key is a string: "p, g".
+Returns dict: {My secret power:a, my public value:g**a%p, sharedSecret:other's pub val**a%p}'''
 	key=key_parse(key, no=2, rules="strict")
 	p=key[0]
 	g=key[1]
@@ -180,7 +180,7 @@ def diffieHellman(key):
 	print(f"Send this to other: \033[1m{aKey}\033[0m")
 	bKey=int(input("Enter b: "))
 	s=bKey**a%p
-	return {'a':a, 'aKey':aKey, 's':s}
+	return {'secPow':a, 'myKey':aKey, 's':s}
 
 def dlp(key, tableName="table.txt", tableGen=True):
 	'''Discrete Log Problem.
@@ -265,30 +265,6 @@ NOTE: will ask for e which must be any int 1<e<phi(n). The program will choose t
 
 	return {'e':e, 'd':d, 'n':n}
 
-
-#------------------#
-#    EXCEPTIONS    #
-#------------------#
-class DegreeError(Exception):
-	'''Raised when an invalid degree is passed'''
-	pass
-
-class CoeffError(Exception):
-	'''Raised when an invalid coefficient is passed'''
-	pass
-
-class TermError(Exception):
-	'''Raised for a general Term error'''
-	pass
-
-class RangeError(Exception):
-	'''Raised if an invalid range string was passed to Letters'''
-	pass
-
-class RuleError(Exception):
-	'''Raised when a rule was broken'''
-	def __init__(self, rule):
-		Exception.__init__(self, rule)
 
 #-------------#
 #    NOTES    #

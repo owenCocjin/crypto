@@ -1,13 +1,12 @@
 ## Author:	Owen Cocjin
 ## Version:	1.2
-## Date:	08/02/20
+## Date:	12/03/20
 ## Notes:
-##	- Updated hFunc
-##	- Added dlp to keygen
-##	- Made kFunc just return key
+##	- Fixed import of progMenu
 
-from progMenu import menu, MenuEntry, vprint
-from .crypto_funcs import diffieHellman, ea, key_parse, keyz26, patdown, RuleError, rsaGen
+from progMenu.progMenu import menu, MenuEntry, vprint
+from .crypto_funcs import diffieHellman, ea, key_parse, keyz26, patdown, rsaGen
+from .crypto_errors import RuleError
 
 #-------------#
 #    FUNCS    #

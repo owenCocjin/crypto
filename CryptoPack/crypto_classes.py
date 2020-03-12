@@ -1,11 +1,12 @@
 ## Author:	Owen Cocjin
-## Version:	1.2
-## Date:	08/02/20
+## Version:	1.3
+## Date:	17/02/20
 ## Notes:
 ##	- Migrated crypto_misc classes over here
 ##	- Made each class handle their own keys (each class now utilizes key_parse with it's own specific rules!)
-
+##	- Created crypto_errors.py
 from .crypto_funcs import et, ea, feea, fme, isPrime, key_parse, keyz26, patdown
+from .crypto_errors import *
 
 class Crypt():
 	def __init__(self, name, word, key, d=None, letters=None):
