@@ -4,6 +4,6 @@
 ## Notes:
 ##	- Added crypto_errors
 
-from cryptoPack.crypto_classes import *
-from cryptoPack.crypto_funcs import *
-from cryptoPack.crypto_errors import *
+from CryptoPack.crypto_classes import *
+from CryptoPack.crypto_funcs import *
+from CryptoPack.crypto_errors import *
