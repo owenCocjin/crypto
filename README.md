@@ -6,7 +6,7 @@
 ## Installation
 
 - Clone this repo. **Note:** this repo uses a submodule, meaning in addition to cloning, you must initialize the submodule. Here are some options to doing this:
-	+ Clone using `git clone --recursive-submodules https://...`
+	+ Clone using `git clone --recurse-submodules https://...`
 	+ Initialize after cloning: `git submodule update --init --recursive`
 
 - Run script (in path):
