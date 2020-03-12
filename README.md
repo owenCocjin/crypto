@@ -20,8 +20,8 @@
 > ~~The convention is to put public repositories in `/usr/lib/pythonX.X/dist-packages`. If you don't have the *dist-package* folder, you can realistically put it anywhere else in the path, but I would suggest `/usr/lib/pythonX.X/site-packages`, which is the default PIP directory.~~
 > ~~NOTE: If copying into path, make sure you install ```progMenu``` to the path as well, as some~~
 ```
-~~$ python -c 'import sys; print(sys.path)'
-['', '/usr/lib/python3.7', '/other/paths']~~
+$ python -c 'import sys; print(sys.path)'
+['', '/usr/lib/python3.7', '/other/paths']
 ```
 
 <br/>
@@ -32,6 +32,6 @@
 - ~~If installed as a library (moved *CryptoPack* to python path), use as any other library:~~
 
 ```
-~~from CryptoPack import feea  #Fast Euclidean Algo
-print(feea)~~
-```~~
+from CryptoPack import feea  #Fast Euclidean Algo
+print(feea)
+```
